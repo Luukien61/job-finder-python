@@ -1,0 +1,11 @@
+# created by virtualenv automatically
+lib
+share
+bin
+bin/**
+extracted_images
+uploads
+lib/**
+share/**
+.env
+
