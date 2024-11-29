@@ -1,16 +1,13 @@
 import shutil
 from pathlib import Path
-from typing import List
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, UploadFile
+from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from crud import get_items, get_item, create_item
 from database import get_connection
 from handle_pdf import pymuf_pdf
 from upload import upload_file_to_s3
-from models import Item
 
 app = FastAPI()
 BUCKET_NAME = 'jobfinder-kienluu'
@@ -24,19 +21,6 @@ app.add_middleware(
 
 connection = get_connection()
 
-
-@app.get("/items", response_model=List[Item])
-def read_items():
-    items = get_items(connection)
-    return items
-
-
-@app.get("/items/{item_id}", response_model=Item)
-def read_item(item_id: int):
-    item = get_item(connection, item_id)
-    if item:
-        return item
-    raise HTTPException(status_code=404, detail="Item not found")
 
 @app.get("/connect")
 def get_connection():
