@@ -1,5 +1,10 @@
 import shutil
+from datetime import datetime
+from numbers import Number
 from pathlib import Path
+from typing import List, Optional
+
+from pydantic import BaseModel
 
 import uvicorn
 from fastapi import FastAPI, UploadFile
@@ -7,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from database import get_connection
 from handle_pdf import pymuf_pdf
+from recommendation import get_user_search_keys
 from upload import upload_file_to_s3
 
 app = FastAPI()
@@ -20,11 +26,31 @@ app.add_middleware(
 )
 
 connection = get_connection()
+class UserRequest(BaseModel):
+    userId: str
 
-
+class Job(BaseModel):
+    jobId: int
+    title: str
+    createdDate: datetime
+    expireDate: datetime
+    field: str
+    location: str
+    maxSalary: int  # Có thể null
+    minSalary: int  # Có thể null
+    companyId: str
+    province: Optional[str]
+    companyName: str
+    logo: str
+    experience: Optional[int]
 @app.get("/connect")
 def get_connection():
     return {"status": "Connected"}
+
+@app.post("/recommendations",response_model=List[Job])
+def get_recommendations(request: UserRequest):
+    jobs = get_user_search_keys(request.userId)
+    return jobs
 
 @app.post("/cv")
 def create_new_item(file: UploadFile):
