@@ -94,7 +94,7 @@ def sentences_embeddings(queries, jobs, jobs_similarities):
             similarity = cosine_similarity(embedding, vector_2)[0][0]
             jobs_copy[index]['similarity'] = similarity
         jobs_copy = sorted(
-            filter(lambda job: 0.2 < job['similarity'] < 0.9, jobs_copy),
+            filter(lambda job: 0.3 < job['similarity'] < 0.9, jobs_copy),
             key=lambda job: job['similarity'],
             reverse=True)
         jobs_similarities.append(jobs_copy)
@@ -122,13 +122,23 @@ def recommend_jobs(input_text):
     return result
 
 
-def get_user_search_keys(user_id):
-    connection = get_connection()
-    cursor = connection.cursor()
-    params = (user_id,)
-    cursor.execute("SELECT * FROM user_entity_search_history u where u.user_entity_id= %s", params)
-    sql_result = cursor.fetchall()
-    history= [key[1] for key in sql_result]
-    return recommend_jobs(history)
+def get_user_search_keys(request):
+    user_id = request.userId
+    title = request.title
+    history =[]
+    if title is not None and title != '':
+        history.append(title)
+    if user_id is not None and user_id != '':
+        connection = get_connection()
+        cursor = connection.cursor()
+        params = (user_id,)
+        cursor.execute("SELECT * FROM user_entity_search_history u where u.user_entity_id= %s", params)
+        sql_result = cursor.fetchall()
+        for key in sql_result:
+            history.append(key[1])
+    if len(history) > 0:
+        return recommend_jobs(history)
+    else:
+        return []
 
 

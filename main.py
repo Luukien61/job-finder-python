@@ -27,7 +27,8 @@ app.add_middleware(
 
 connection = get_connection()
 class UserRequest(BaseModel):
-    userId: str
+    userId: Optional[str] = None
+    title: Optional[str] = None
 
 class Job(BaseModel):
     jobId: int
@@ -49,7 +50,8 @@ def get_connection():
 
 @app.post("/recommendations",response_model=List[Job])
 def get_recommendations(request: UserRequest):
-    jobs = get_user_search_keys(request.userId)
+    print(request)
+    jobs = get_user_search_keys(request)
     return jobs
 
 @app.post("/cv")
@@ -79,7 +81,6 @@ def upload_file(file: UploadFile):
         return {"error": str(e)}
    # url = upload_file_to_s3(str(file_path), BUCKET_NAME)
     return result
-
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
