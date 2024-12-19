@@ -10,7 +10,7 @@ from PIL import Image
 from transformers import AutoTokenizer, AutoModelForTokenClassification
 from transformers import pipeline
 
-from FacialAttibute import gender_detection
+from FacialAttibute import predict_gender
 
 output_dir = "extracted_images"
 os.makedirs(output_dir, exist_ok=True)
@@ -78,14 +78,11 @@ def pymuf_pdf(file: str):
     if image_path!='':
         encoded_image = encode_image_to_base64(image_path)
         try:
-            result = gender_detection(image_path)
-            result = result[0]
-            if get_gender(result):
-                gender = result['dominant_gender']
-                if gender == 'Man':
-                    gender = "Nam"
-                elif gender == 'Woman':
-                    gender = "Nữ"
+            gender = predict_gender(image_path)
+            if gender == 'Male':
+                gender = "Nam"
+            elif gender == 'Female':
+                gender = "Nữ"
 
         except Exception as e:
             print("Error: ", e)
