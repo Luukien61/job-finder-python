@@ -87,7 +87,14 @@ def pymuf_pdf(file: str):
         except Exception as e:
             print("Error: ", e)
         os.remove(image_path)
-
+    result = {"name": ultimate_person,
+            "email": email,
+            "phone": phone,
+            "date": date,
+            "location": " ".join(final_location),
+            "organization": organization,
+            "gender": gender}
+    print(result)
     return {"name": ultimate_person,
             "email": email,
             "phone": phone,
@@ -95,8 +102,7 @@ def pymuf_pdf(file: str):
             "location": " ".join(final_location),
             "organization": organization,
             "gender": gender,
-            "image": encoded_image
-            }
+            "image": encoded_image}
 
 
 def get_gender(result):

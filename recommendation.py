@@ -86,18 +86,23 @@ def sentences_embeddings(queries, jobs, jobs_similarities):
     for embedding in corpus_embeddings:
         vector_1 = np.array(embedding).reshape(1, -1)
         titles_embeddings.append(vector_1)
-
+    print("Input: ", queries)
+    print("\n")
     for query, query_embedding in zip(queries, query_embeddings):
         jobs_copy = jobs
         vector_2 = np.array(query_embedding).reshape(1, -1)
         for index, embedding in enumerate(titles_embeddings):
             similarity = cosine_similarity(embedding, vector_2)[0][0]
             jobs_copy[index]['similarity'] = similarity
+            print("Title: ", jobs_copy[index]['title'])
+            print("Similarity: ", jobs_copy[index]['similarity'])
+            print("\n")
         jobs_copy = sorted(
             filter(lambda job: 0.3 < job['similarity'] < 0.9, jobs_copy),
             key=lambda job: job['similarity'],
             reverse=True)
         jobs_similarities.append(jobs_copy)
+
 
 
 def recommend_jobs(input_text):
@@ -107,7 +112,6 @@ def recommend_jobs(input_text):
     for text in input_text:
         text = preprocess_text(text)
         tfidf_similarity.extend(tf_idf_cal(text, tfidf_matrix, vectorizer, jobs))
-
     sentences_embeddings(input_text, jobs, jobs_similarities)
     all_dicts = [d for sublist in jobs_similarities for d in sublist]
     id_counts = Counter(d['jobId'] for d in all_dicts)
@@ -134,6 +138,8 @@ def get_user_search_keys(request):
         params = (user_id,)
         cursor.execute("SELECT * FROM user_entity_search_history u where u.user_entity_id= %s", params)
         sql_result = cursor.fetchall()
+        if len(sql_result) == 0:
+            return []
         for key in sql_result:
             history.append(key[1])
     if len(history) > 0:
