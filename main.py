@@ -1,18 +1,18 @@
 import shutil
 from datetime import datetime
-from numbers import Number
 from pathlib import Path
 from typing import List, Optional
 
-from pydantic import BaseModel
-
 import uvicorn
 from fastapi import FastAPI, UploadFile
+from fastapi import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 from database import get_connection
 from handle_pdf import pymuf_pdf
 from recommendation import get_user_search_keys
+from speech_to_text import transcribe_audio
 from upload import upload_file_to_s3
 
 app = FastAPI()
@@ -81,6 +81,18 @@ def upload_file(file: UploadFile):
         return {"error": str(e)}
    # url = upload_file_to_s3(str(file_path), BUCKET_NAME)
     return result
+
+class URLRequest(BaseModel):
+    url: str
+@app.post("/transcribe")
+async def transcribe(request: URLRequest):
+    try:
+        text = transcribe_audio(request.url)
+        return {
+            "text": text,
+        }
+    except Exception as e:
+        raise  HTTPException(status_code=400, detail=str(e))
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

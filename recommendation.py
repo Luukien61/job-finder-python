@@ -28,7 +28,7 @@ def get_all_jobs():
     cursor.execute(
         "SELECT job_id, title, job.created_at, expire_date, job.field, location, max_salary, min_salary,"
         "company_id,province, company.name, company.logo, experience "
-        "FROM job join company on job.company_id = company.id where expire_date > current_date")
+        "FROM job join company on job.company_id = company.id where expire_date > current_date and job.state= 'PENDING'")
     datasets = cursor.fetchall()
     keys = ["jobId", "title", "createdDate", "expireDate", "field", "location", "maxSalary", "minSalary",
             "companyId", "province", "companyName", "logo", "experience"]
