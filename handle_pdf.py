@@ -37,11 +37,6 @@ def pymuf_pdf(file: str):
                     if block_type == 0:  # 0 là dạng văn bản, 1 là dạng ảnh
                         text = capitalize_all_caps(text)
                         full_text += text + ", "
-                full_text, email, phone, date = clean_text(full_text)
-                emails.append(email)
-                pattern = f"[{re.escape(string.punctuation.replace('@', ''))}]"
-                full_text = re.sub(pattern, '', full_text)
-                NlpHUST(full_text)
                 # get image
                 if page_num == 0:
                     images = page.get_images(full=True)
@@ -55,6 +50,11 @@ def pymuf_pdf(file: str):
                         image.save(temp_path)
                         if not contains_face(temp_path):
                             os.remove(temp_path)
+            full_text, email, phone, date = clean_text(full_text)
+            emails.append(email)
+            pattern = f"[{re.escape(string.punctuation.replace('@', ''))}]"
+            full_text = re.sub(pattern, '', full_text)
+            NlpHUST(full_text)
     except Exception as e:
         print(e)
     email = emails[0]

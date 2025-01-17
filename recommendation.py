@@ -73,7 +73,7 @@ def tf_idf_cal(text, tfidf_matrix, vectorizer, jobs):
     cosine_similarities = cosine_similarity(input_vector, tfidf_matrix).flatten()
     for i, job in enumerate(jobs):
         job['similarity'] = cosine_similarities[i]
-    filtered_jobs = [job for job in jobs if 0.2 < job['similarity'] < 0.9]
+    filtered_jobs = [job for job in jobs if 0.5 < job['similarity'] < 0.9]
     sorted_jobs = sorted(filtered_jobs, key=lambda job: job['similarity'], reverse=True)
     return sorted_jobs
 
@@ -91,6 +91,7 @@ def sentences_embeddings(queries, jobs, jobs_similarities):
     for query, query_embedding in zip(queries, query_embeddings):
         jobs_copy = jobs
         vector_2 = np.array(query_embedding).reshape(1, -1)
+        print("embedding: ", vector_2)
         for index, embedding in enumerate(titles_embeddings):
             similarity = cosine_similarity(embedding, vector_2)[0][0]
             jobs_copy[index]['similarity'] = similarity
@@ -98,7 +99,7 @@ def sentences_embeddings(queries, jobs, jobs_similarities):
             print("Similarity: ", jobs_copy[index]['similarity'])
             print("\n")
         jobs_copy = sorted(
-            filter(lambda job: 0.3 < job['similarity'] < 0.9, jobs_copy),
+            filter(lambda job: 0.45 < job['similarity'] < 0.9, jobs_copy),
             key=lambda job: job['similarity'],
             reverse=True)
         jobs_similarities.append(jobs_copy)
