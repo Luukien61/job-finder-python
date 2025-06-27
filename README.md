@@ -217,3 +217,91 @@ curl -X POST http://localhost:8000/recommendations \
   -d '{"userId": "user123", "title": "Software Engineer"}'
 
 ```
+
+#### clean up resources
+```shell
+sudo apt autoremove
+sudo apt autoclean
+sudo apt clean # clear all apt cache
+sudo du -sh /var/log/* # check the log files's size
+
+sudo rm -rf /tmp/*
+sudo find / -type f -size +100M # locate file that more than 100MB 
+
+find ~ -type d -name "venv" -o -name ".venv"
+du -sh ~/.cache/pip
+pip install --no-cache-dir -r requirements.txt
+```
+
+---
+Những file như:
+
+* `tokenizer_config.json`
+* `vocab.txt`
+* `tokenizer.json`
+
+là các thành phần của tokenizer từ Hugging Face Transformers (thường khi bạn làm `from_pretrained()`), và **nó sẽ tự động tải về nếu chưa có local cache**.
+
+---
+
+### ✅ Chúng được lưu ở đâu?
+
+Mặc định, Hugging Face lưu các file tải về ở thư mục:
+
+```
+~/.cache/huggingface/
+```
+
+Cụ thể:
+
+```
+~/.cache/huggingface/transformers/
+```
+
+
+---
+
+### ✅ Cách kiểm tra chính xác trên máy bạn:
+
+Chạy lệnh:
+
+```bash
+ls ~/.cache/huggingface/transformers/
+```
+
+---
+
+### ✅ Nếu bạn muốn biết chính xác vị trí model hoặc tokenizer đã lưu:
+
+Bạn có thể in nó trong code:
+
+```python
+from transformers import AutoTokenizer
+
+tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+print(tokenizer.pretrained_vocab_files_map)
+print(tokenizer.vocab_files_names)
+```
+
+Hoặc:
+
+```python
+print(tokenizer.cache_dir)
+```
+
+---
+
+### ✅ Tuỳ chỉnh nơi lưu (nếu cần):
+
+Bạn có thể đặt biến môi trường để thay đổi nơi cache:
+
+```bash
+export HF_HOME=/your/custom/cache/dir
+```
+
+→ Sau đó, mọi thứ sẽ lưu ở:
+
+```
+/your/custom/cache/dir/transformers/
+```
+

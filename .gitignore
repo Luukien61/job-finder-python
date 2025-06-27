@@ -10,3 +10,5 @@ share/**
 .env
 __pycache__
 /tf-idf/
+/.venv/
+/.idea/
